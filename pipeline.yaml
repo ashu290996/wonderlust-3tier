@@ -89,4 +89,15 @@ stages:
                 uploadReports: true
                 failOnCVSS: '7'
 
+    - stage: Trivyscan
+      jobs:
+        - job: Trivyfilescan
+          displayName: 'Trivyfilescan'
+          steps:
+            - script: trivy fs --severity $(trivySeverity) --format table --output $(Build.ArtifactStagingDirectory)/trivy-fs-backend-report.txt
+              workingDirectory: wanderlust-3tier-project/backend
+
+            - script: trivy fs --severity $(trivySeverity) --format table --output $(Build.ArtifactStagingDirectory)/trivy-fs-frontend-report.txt
+              workingDirectory: wanderlust-3tier-project/frontend 
+
 
