@@ -70,8 +70,22 @@ stages:
 
             - task: SonarQubePublish@8
               displayName: 'SonarQubePublish'
-              continueOnError: true
+              continueOnError: false
               inputs:
                 pollingTimeoutSec: '300'
                 
+    - stage: OWASP
+      jobs:
+        - job: OWASP
+          displayName: 'OWASP dependency checker'
+          steps:
+
+            - task: dependency-check-build-task@6
+              inputs:
+                projectName: 'wonderlust-3tier'
+                scanPath: 'wanderlust-3tier-project'
+                format: 'HTML'
+                uploadReports: true
+                failOnCVSS: '7'
+
 
