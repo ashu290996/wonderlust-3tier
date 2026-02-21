@@ -4,7 +4,8 @@ trigger:
 variables:
   # Docker Registry
   dockerRegistry: 'ashudevops'
-  imageName: 'ashu290996/wonderlust'
+  imageName1: 'ashu290996/wonderlustfrontend'
+  imageName2: 'ashu290996/wonderlustbackened'
   imageTag: '$(Build.BuildId)'
   
   # SonarQube
@@ -115,7 +116,7 @@ stages:
           - task: Docker@2
             inputs:
               containerRegistry: '$(dockerRegistry)'
-              repository: '$(imageName)'
+              repository: '$(imageName1)'
               command: 'buildAndPush'
               Dockerfile: '**wanderlust-3tier-project/frontend/Dockerfile_optimized'
               tags: |
@@ -128,12 +129,14 @@ stages:
             - task: Docker@2
               inputs:
                 containerRegistry: '$(dockerRegistry)'
-                repository: '$(imageName)'
+                repository: '$(imageName2)'
                 command: 'buildAndPush'
-                Dockerfile: '**wanderlust-3tier-project/backened/Dockerfile_optimized'
+                Dockerfile: '**wanderlust-3tier-project/backend/Dockerfile_optimized'
                 tags: |
                   $(imageTag)
                   latest
+
+        
 
 
 
