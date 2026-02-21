@@ -1,1 +1,37 @@
+trigger:
+  none
+
+variables:
+  # Docker Registry
+  dockerRegistry: 'ashudevops'
+  imageName: 'ashu290996/wonderlust'
+  imageTag: '$(Build.BuildId)'
+  
+  # SonarQube
+  sonarQubeServiceConnection: 'SonarQube'
+  sonarProjectKey: 'wonderlust'
+  
+  # Kubernetes
+  kubernetesServiceConnection: 'k8s-prod-connection'
+  stagingNamespace: 'staging'
+  productionNamespace: 'production'
+  
+  # Build
+  #vmImageName: 'ubuntu-latest'
+  
+  # Security Thresholds
+  trivySeverity: 'HIGH,CRITICAL'
+  owaspFailOnCVSS: 7
+
+pool:
+ name: default
+
+stages:
+    - stage: Compile
+      displayName: 'Compile of the code'
+      jobs:
+        - job: CompileJob
+          displayName: 'Compiling the code'
+          steps:
+              - 
 
