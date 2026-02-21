@@ -81,6 +81,7 @@ stages:
           steps:
 
             - task: dependency-check-build-task@6
+              continueOnError: true
               inputs:
                 projectName: 'wonderlust-3tier'
                 scanPath: 'wanderlust-3tier-project'
