@@ -8,7 +8,7 @@ variables:
   imageTag: '$(Build.BuildId)'
   
   # SonarQube
-  sonarQubeServiceConnection: 'SonarQube'
+  sonarQubeServiceConnection: 'sonarQube'
   sonarProjectKey: 'wonderlust'
   
   # Kubernetes
@@ -46,6 +46,20 @@ stages:
           - script: npm install
             displayName: Installdependency frontend
             workingDirectory: wanderlust-3tier-project/frontend
+      
+    - stage: SonarQube
+      displayName: 'SonarQube Analysis'
+      jobs:
+          - job: SonarQubeAnalysis
+            steps: 
 
+            - task: SonarQubePrepare@8
+              displayName: 'Prepare SonarQube Analysis'
+              inputs:
+                SonarQube: '$(sonarQubeServiceConnection)'
+                scannerMode: 'Other'
+                extraProperties: |
+                  sonar.projectKey=$(sonarProjectKey)
+                  sonar.projectName=$(sonarProjectKey)
 
 
