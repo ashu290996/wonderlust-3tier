@@ -30,6 +30,22 @@ stages:
     - stage: Compile
       displayName: 'Compile of the code'
       jobs:
+        - job: InstalldependencybackendJob
+          displayName: 'Installdependency for backend code'
+          steps:
+              - script: |
+                 echo "Installdependency backend"
+                 cd wanderlust-3tier-project/backend
+                 npm install 
+
+        - job: InstalldependencyfrontendJob
+          displayName: 'Installdependency of fronted code'
+          steps:
+              - script: |
+                 echo "Installdependency fronted"
+                 cd wanderlust-3tier-project/fronted
+                 npm install 
+
         - job: CompilebackedJob
           displayName: 'Compiling the backend code'
           steps:
@@ -37,6 +53,7 @@ stages:
                  echo "Compiling backend"
                  cd wanderlust-3tier-project/backend
                  find . -name "*.js" -exec node --check {} +
+
         - job: CompilefrontendJob
           displayName: 'Compiling the fronted code'
           steps:
