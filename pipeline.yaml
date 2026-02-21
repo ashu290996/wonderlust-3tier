@@ -30,8 +30,18 @@ stages:
     - stage: Compile
       displayName: 'Compile of the code'
       jobs:
-        - job: CompileJob
-          displayName: 'Compiling the code'
+        - job: CompilebackedJob
+          displayName: 'Compiling the backend code'
           steps:
-              - 
+              - script: |
+                 echo "Compiling backend"
+                 cd wanderlust-3tier-project/backend
+                 find . -name "*.js" -exec node --check {} +
+        - job: CompilefrontendJob
+          displayName: 'Compiling the fronted code'
+          steps:
+              - script: |
+                 echo "Compiling fronted"
+                 cd wanderlust-3tier-project/fronted
+                 find . -name "*.js" -exec node --check {} +
 
