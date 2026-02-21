@@ -61,5 +61,16 @@ stages:
                 extraProperties: |
                   sonar.projectKey=$(sonarProjectKey)
                   sonar.projectName=$(sonarProjectKey)
+                  
+            - task: SonarQubeAnalyze@8
+              displayName: 'SonarQubeAnalyze'
+              inputs:
+                jdkversion: 'JAVA_HOME_21_X64'
 
+            - task: SonarQubePublish@8
+              displayName: 'SonarQubePublish'
+              continueOnError: true
+              inputs:
+                pollingTimeoutSec: '300'
+                
 
