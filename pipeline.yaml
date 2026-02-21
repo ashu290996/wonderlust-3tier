@@ -57,10 +57,11 @@ stages:
               displayName: 'Prepare SonarQube Analysis'
               inputs:
                 SonarQube: '$(sonarQubeServiceConnection)'
-                scannerMode: 'Other'
-                extraProperties: |
-                  sonar.projectKey=$(sonarProjectKey)
-                  sonar.projectName=$(sonarProjectKey)
+                scannerMode: 'CLI'
+                configMode: 'manual'
+                cliProjectKey: 'blog-app'
+                cliProjectName: 'blog-app'
+                cliSources: 'wanderlust-3tier-project'
                   
             - task: SonarQubeAnalyze@8
               displayName: 'SonarQubeAnalyze'
