@@ -135,8 +135,152 @@ stages:
                 tags: |
                   $(imageTag)
                   latest
+ # =====================================================
+ # STAGE 7: TRIVY SCAN - DOCKER IMAGE
+ # =====================================================
+    - stage: Trivy_ImageScan
+      displayName: 'Trivy Image Scan'
+      #dependsOn: DockerBuild
+      jobs:
+        - job: TrivyImageScan
+          displayName: 'Scan Docker frontend Image'
+          steps:
+          # - script: |
+          #     # Install Trivy
+          #     curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.48.0
+          #   displayName: 'Install Trivy'
 
-        
+          - task: Docker@2
+            displayName: 'Docker Login'
+            inputs:
+              containerRegistry: '$(dockerRegistry)'
+              command: 'login'
+
+          - script: |
+              echo "=== Scanning Docker image for vulnerabilities ==="
+              
+              # Pull the image
+              docker pull $(dockerRegistry)/$(imageName1):$(imageTag) || true
+              
+              # Table format for console
+              trivy image $(dockerRegistry)/$(imageName1):$(imageTag) \
+                --severity $(trivySeverity) \
+                --format table \
+                --output $(Build.ArtifactStagingDirectory)/trivy-image-report.txt
+              
+              # JSON format for parsing
+              trivy image $(dockerRegistry)/$(imageName1):$(imageTag) \
+                --severity $(trivySeverity) \
+                --format json \
+                --output $(Build.ArtifactStagingDirectory)/trivy-image-report.json
+              
+              # SARIF format for Azure DevOps Security tab
+              trivy image $(dockerRegistry)/$(imageName1):$(imageTag) \
+                --severity $(trivySeverity) \
+                --format sarif \
+                --output $(Build.ArtifactStagingDirectory)/trivy-image-report.sarif
+              
+              # HTML report
+              trivy image $(dockerRegistry)/$(imageName1):$(imageTag) \
+                --severity $(trivySeverity) \
+                --format template \
+                --template "@contrib/html.tpl" \
+                --output $(Build.ArtifactStagingDirectory)/trivy-image-report.html || true
+              
+              # Display results
+              cat $(Build.ArtifactStagingDirectory)/trivy-image-report.txt
+              
+              # Fail on critical vulnerabilities
+              trivy image $(dockerRegistry)/$(imageName1):$(imageTag) \
+                --severity CRITICAL \
+                --exit-code 1 \
+                --ignore-unfixed || {
+                  echo "##vso[task.logissue type=error]CRITICAL vulnerabilities found in Docker image!"
+                  exit 1
+                }
+            displayName: 'Trivy Image Scan'
+
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish Trivy Image Report'
+            inputs:
+              pathToPublish: '$(Build.ArtifactStagingDirectory)'
+              artifactName: 'trivy-image-report'
+            condition: always()
+
+        - job: TrivyImageScan2
+          displayName: 'Scan Docker backened Image'
+          steps:
+              # - script: |
+              #     # Install Trivy
+              #     curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.48.0
+              #   displayName: 'Install Trivy'
+
+          - task: Docker@2
+            displayName: 'Docker Login'
+            inputs:
+              containerRegistry: '$(dockerRegistry)'
+              command: 'login'
+
+          - script: |
+                echo "=== Scanning Docker image for vulnerabilities ==="
+                
+                # Pull the image
+                docker pull $(dockerRegistry)/$(imageName2):$(imageTag) || true
+
+                trivy image $(dockerRegistry)/$(imageName2):$(imageTag) \
+                  --severity $(trivySeverity) \
+                  --format table \
+                  --output $(Build.ArtifactStagingDirectory)/trivy-image-report.txt
+
+                # JSON format for parsing
+                trivy image $(dockerRegistry)/$(imageName2):$(imageTag) \
+                  --severity $(trivySeverity) \
+                  --format json \
+                  --output $(Build.ArtifactStagingDirectory)/trivy-image-report.json
+              
+                # SARIF format for Azure DevOps Security tab
+                trivy image $(dockerRegistry)/$(imageName2):$(imageTag) \
+                  --severity $(trivySeverity) \
+                  --format sarif \
+                  --output $(Build.ArtifactStagingDirectory)/trivy-image-report.sarif
+                
+                # HTML report
+                trivy image $(dockerRegistry)/$(imageName2):$(imageTag) \
+                  --severity $(trivySeverity) \
+                  --format template \
+                  --template "@contrib/html.tpl" \
+                  --output $(Build.ArtifactStagingDirectory)/trivy-image-report.html || true
+                
+                # Display results
+                cat $(Build.ArtifactStagingDirectory)/trivy-image-report.txt
+                
+                # Fail on critical vulnerabilities
+                trivy image $(dockerRegistry)/$(imageName2):$(imageTag) \
+                  --severity CRITICAL \
+                  --exit-code 1 \
+                  --ignore-unfixed || {
+                    echo "##vso[task.logissue type=error]CRITICAL vulnerabilities found in Docker image!"
+                    exit 1
+                  }
+                displayName: 'Trivy Image Scan2'
+
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish Trivy Image Report2'
+            inputs:
+                pathToPublish: '$(Build.ArtifactStagingDirectory)'
+                artifactName: 'trivy-image-report2'
+            condition: always()
+
+    - stage: dokcercompose
+      displayName: 'dokcercompose deploy'
+      jobs:
+        - job: 
+          displayName: 'dokcercompose deploy'
+          steps:
+            - script: | 
+               docker compose pull
+               docker compose up -d --remove-orphans
+              workingDirectory: wanderlust-3tier-project
 
 
 
