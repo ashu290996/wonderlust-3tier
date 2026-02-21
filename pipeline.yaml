@@ -114,8 +114,8 @@ stages:
 
           - task: Docker@2
             inputs:
-              containerRegistry: 'ashudevops'
-              repository: '$(dockerRegistry)'
+              containerRegistry: '$(dockerRegistry)'
+              repository: '$(imageName)'
               command: 'buildAndPush'
               Dockerfile: '**wanderlust-3tier-project/frontend/Dockerfile_optimized'
               tags: |
@@ -127,8 +127,8 @@ stages:
           steps:
             - task: Docker@2
               inputs:
-                containerRegistry: 'ashudevops'
-                repository: '$(dockerRegistry)'
+                containerRegistry: '$(dockerRegistry)'
+                repository: '$(imageName)'
                 command: 'buildAndPush'
                 Dockerfile: '**wanderlust-3tier-project/backened/Dockerfile_optimized'
                 tags: |
