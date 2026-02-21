@@ -97,14 +97,49 @@ stages:
             - script: trivy fs . --severity $(trivySeverity) --format table --output $(Build.ArtifactStagingDirectory)/trivy-fs-backend-report.txt
               workingDirectory: wanderlust-3tier-project/backend
 
-            - script: echo cat $(Build.ArtifactStagingDirectory)/trivy-fs-backend-report.txt
+            - script:  cat $(Build.ArtifactStagingDirectory)/trivy-fs-backend-report.txt
               workingDirectory: wanderlust-3tier-project/backend
 
             - script: trivy fs . --severity $(trivySeverity) --format table --output $(Build.ArtifactStagingDirectory)/trivy-fs-frontend-report.txt
               workingDirectory: wanderlust-3tier-project/frontend
 
-            - script: echo cat $(Build.ArtifactStagingDirectory)/trivy-fs-frontend-report.txt
+            - script:  cat $(Build.ArtifactStagingDirectory)/trivy-fs-frontend-report.txt
               workingDirectory: wanderlust-3tier-project/frontend  
+
+    - stage: DockerImage
+      jobs:
+        - job: DockerbuildfrontImage
+          displayName: 'DockerbuildfrontImage'
+          steps:
+
+          - task: Docker@2
+            inputs:
+              containerRegistry: 'ashudevops'
+              repository: '$(dockerRegistry)'
+              command: 'buildAndPush'
+              Dockerfile: '**wanderlust-3tier-project/frontend/Dockerfile_optimized'
+              tags: |
+                $(imageTag)
+                latest
+
+        - job: DockerbuildbackenedImage
+          displayName: 'DockerbuildbackenedImage'
+          steps:
+            - task: Docker@2
+              inputs:
+                containerRegistry: 'ashudevops'
+                repository: '$(dockerRegistry)'
+                command: 'buildAndPush'
+                Dockerfile: '**wanderlust-3tier-project/backened/Dockerfile_optimized'
+                tags: |
+                  $(imageTag)
+                  latest
+
+
+
+              
+
+          
 
 
 
