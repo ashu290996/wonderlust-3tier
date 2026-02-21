@@ -97,7 +97,15 @@ stages:
             - script: trivy fs . --severity $(trivySeverity) --format table --output $(Build.ArtifactStagingDirectory)/trivy-fs-backend-report.txt
               workingDirectory: wanderlust-3tier-project/backend
 
+            - script: echo $(Build.ArtifactStagingDirectory)/trivy-fs-backend-report.txt
+              workingDirectory: wanderlust-3tier-project/backend
+
             - script: trivy fs . --severity $(trivySeverity) --format table --output $(Build.ArtifactStagingDirectory)/trivy-fs-frontend-report.txt
-              workingDirectory: wanderlust-3tier-project/frontend 
+              workingDirectory: wanderlust-3tier-project/frontend
+
+            - script: echo $(Build.ArtifactStagingDirectory)/trivy-fs-frontend-report.txt
+              workingDirectory: wanderlust-3tier-project/frontend  
+
+
 
 
